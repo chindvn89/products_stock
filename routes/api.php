@@ -23,7 +23,7 @@ $api->version('v1', function ($api) {
 
     $api->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['api']], function ($api) {
         $api->resource('products','ProductController');
-        $api->post('products/{code}/add-stock', 'ProductController@addStock');
+        $api->post('products/{code}/stocks', 'ProductController@addStock');
         $api->post('products/bulk', 'ProductController@upsertBulk');
         $api->post('stocks/bulk', 'StockController@insertBulk');
     });
