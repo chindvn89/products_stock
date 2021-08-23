@@ -107,7 +107,7 @@ class ProductService extends BaseService
 
     private function buildQueryList($params = [])
     {
-        $query = $this->modelClass::whereRaw('1=1');
+        $query = $this->modelClass::query();
         $this->buildQueryAddSumOnHand($query, $params); // always do it -> stocks_sum_on_hand is available for other steps
         $this->buildQueryFilter($query, $params);
         $this->buildQueryListOrder($query, $params);
