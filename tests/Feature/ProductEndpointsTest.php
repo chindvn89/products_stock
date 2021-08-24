@@ -12,7 +12,10 @@ use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-class ProductTest extends TestCase
+/*
+ *  This class is used to test the product's API endpoints
+ */
+class ProductEndpointsTest extends TestCase
 {
 
     use DatabaseTransactions;
@@ -31,7 +34,7 @@ class ProductTest extends TestCase
         ];
     }
 
-    public function testGetListEndpoint()
+    public function testGetList()
     {
         Product::factory()->count(115)->create();
         $response = $this->get('/api/products?page=2&per_page=35');
@@ -58,7 +61,7 @@ class ProductTest extends TestCase
         $response->assertJsonPath('meta.pagination.current_page', 2);
     }
 
-    public function testGetDetailEndpoint()
+    public function testGetDetail()
     {
         $product = Product::factory()->create();
         $stock1 = Stock::factory()->create([
@@ -99,7 +102,7 @@ class ProductTest extends TestCase
         $this->assertEquals($responseContent['data']['sum_on_hand'], ($stock1->on_hand + $stock2->on_hand + $stock4->on_hand));
     }
 
-    public function testAddAProductEndpoint()
+    public function testAddAProduct()
     {
         $product = Product::factory()->makeOne();
         $response = $this->post('/api/products', $product->toArray());
@@ -120,7 +123,7 @@ class ProductTest extends TestCase
         $this->assertEquals($responseContent['data']['sum_on_hand'], 0);
     }
 
-    public function testAddAStockForAProductEndpoint()
+    public function testAddAStockToAProduct()
     {
         $product = Product::factory()->create();
         $onHand = rand(1, 999);
@@ -147,7 +150,7 @@ class ProductTest extends TestCase
         $this->assertEquals($product->stocks->count(), 1);
     }
 
-    public function testUpdateAProductEndpoint()
+    public function testUpdateAProduct()
     {
         $product = Product::factory()->create();
         $updateData = [
@@ -162,7 +165,7 @@ class ProductTest extends TestCase
         $this->assertEquals($responseContent['data']['description'], $updateData['description']);
     }
 
-    public function testDeleteAProductEndpoint()
+    public function testDeleteAProduct()
     {
         $product = Product::factory()->create();
         $response = $this->delete("/api/products/{$product->code}");
@@ -175,7 +178,7 @@ class ProductTest extends TestCase
         ]);
     }
 
-    public function testUpsertBulkProductsEndpoint()
+    public function testUpsertBulkProducts()
     {
         $file = new UploadedFile('tests/Data/primex-products-test.csv', 'products.csv', 'text/csv', null, $test = true);
         $response = $this->post('/api/products/bulk', [
@@ -209,53 +212,4 @@ class ProductTest extends TestCase
         ]);
     }
 
-    public function testAddBulkStocksEndpoint()
-    {
-        $file = new UploadedFile('tests/Data/primex-products-test.csv', 'products.csv', 'text/csv', null, $test = true);
-        $response = $this->post('/api/products/bulk', [
-            'file' => $file,
-        ]);
-        $response->assertOk();
-        $product1 = Product::where(['code' => '382026'])->first();
-        $product2 = Product::where(['code' => '49354'])->first();
-        $product3 = Product::where(['code' => '905900'])->first();
-        $product4 = Product::where(['code' => '905906'])->first();
-        $product5 = Product::where(['code' => '69806'])->first();
-        $this->assertNotEmpty($product1);
-        $this->assertNotEmpty($product2);
-        $this->assertNotEmpty($product3);
-        $this->assertNotEmpty($product4);
-        $this->assertNotEmpty($product5);
-
-        $file = new UploadedFile('tests/Data/primex-stock-test.csv', 'stocks.csv', 'text/csv', null, $test = true);
-        $response = $this->post('/api/stocks/bulk', [
-            'file' => $file,
-        ]);
-        $response->assertOk();
-        $this->assertDatabaseHas('stock', [
-            'product_id' => $product1->id,
-            'on_hand' => 1,
-            'production_date' => '2020-08-26',
-        ]);
-        $this->assertDatabaseHas('stock', [
-            'product_id' => $product2->id,
-            'on_hand' => 1,
-            'production_date' => '2020-07-29',
-        ]);
-        $this->assertDatabaseHas('stock', [
-            'product_id' => $product3->id,
-            'on_hand' => 54,
-            'production_date' => '2019-11-13',
-        ]);
-        $this->assertDatabaseHas('stock', [
-            'product_id' => $product4->id,
-            'on_hand' => 35,
-            'production_date' => '2020-04-18',
-        ]);
-        $this->assertDatabaseHas('stock', [
-            'product_id' => $product5->id,
-            'on_hand' => 50,
-            'production_date' => '2020-07-21',
-        ]);
-    }
 }

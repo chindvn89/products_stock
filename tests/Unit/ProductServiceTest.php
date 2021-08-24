@@ -7,10 +7,15 @@ use Faker\Factory as Faker;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Services\ProductService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-class ProductTest extends TestCase
+/*
+ *  This class is used to test the product's service/model
+ */
+class ProductServiceTest extends TestCase
 {
 
     use DatabaseTransactions;
@@ -74,11 +79,50 @@ class ProductTest extends TestCase
         ]);
     }
 
-    public function testProductHasManyStocks()
+    public function testAddAStockToAProduct()
     {
-        $newProduct = Product::factory()->create();
-        $newStocks = Stock::factory()->count(5)->create(['product_id' => $newProduct->id]);
-        $this->assertInstanceOf(Product::class, $newStocks[0]->product);
-        $this->assertEquals(5, $newProduct->stocks->count());
+        $product = Product::factory()->create();
+        $onHand = rand(1, 999);
+        $stockData = Stock::factory()->makeOne([
+            'on_hand' => $onHand,
+            'production_date' => $this->faker->date(Stock::PRODUCTION_DATE_INPUT_FORMAT)
+        ]);
+        $productionDateInDatabase = Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $stockData->production_date)->format(Stock::PRODUCTION_DATE_DATABASE_FORMAT);
+        $product = $this->productService->addStock($product->code, $stockData->toArray());
+        $this->assertEquals($product->stocks->count(), 1);
+        $this->assertEquals($product->stocks[0]->name, $stockData->name);
+        $this->assertEquals($product->stocks[0]->description, $stockData->description);
+        $this->assertEquals($product->stocks[0]->production_date, $productionDateInDatabase);
+    }
+
+    public function testUpsertBulkProduct()
+    {
+        $file = new UploadedFile('tests/Data/primex-products-test.csv', 'products.csv', 'text/csv', null, $test = true);
+        $this->productService->upsertBulk($file);
+        $this->assertDatabaseHas('products', [
+            'code' => '229113',
+            'name' => 'B-ED PIZZLES BP',
+            'description' => 'B-ED PIZZLES BP',
+        ]);
+        $this->assertDatabaseHas('products', [
+            'code' => '214639',
+            'name' => 'BF-COLD WASH TRIPE BP EU',
+            'description' => 'BF-COLD WASH TRIPE BP EU',
+        ]);
+        $this->assertDatabaseHas('products', [
+            'code' => '137513',
+            'name' => 'THICK FLK LT CH T24',
+            'description' => 'THICK FLK LT CH T24',
+        ]);
+        $this->assertDatabaseHas('products', [
+            'code' => '138201',
+            'name' => 'WAKANUI INSIDE VP ST CH',
+            'description' => 'WAKANUI INSIDE VP ST CH',
+        ]);
+        $this->assertDatabaseHas('products', [
+            'code' => '905957',
+            'name' => 'CHK-THIGH FILLET FR SL',
+            'description' => 'CHK-THIGH FILLET FR SL',
+        ]);
     }
 }
