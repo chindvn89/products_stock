@@ -69,20 +69,6 @@ class ProductService extends BaseService
         return true;
     }
 
-    public function upsertABatch($batchData = []) {
-        for ($i=0; $i < count($batchData); $i++) {
-            $batchData[$i]['created_at'] = Carbon::now();
-        }
-        foreach (array_chunk($batchData, 1000) as $chunk) {
-            Product::upsert($chunk, 'code', [
-                'name',
-                'description',
-                'updated_at',
-            ]);
-        };
-        return true;
-    }
-
     public function addStock(string $code, array $stockParams)
     {
         $product = $this->get($code, true);
