@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class ProductEndpointsTest extends TestCase
 {
 
-    // use DatabaseTransactions;
+    use DatabaseTransactions;
 
     protected $faker;
     protected $productData;
