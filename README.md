@@ -17,4 +17,5 @@
 # Run E2E tests with laravel/dusk package
 - Run server ```sudo php artisan serve --port=8000```
 - Config in ```.env.testing``` : APP_URL=http://localhost:8000
+- Run command ```php artisan migrate``` to migrate database of testing environment
 - Run ```php artisan dusk``` to run E2E test cases
