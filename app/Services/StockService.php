@@ -19,7 +19,7 @@ class StockService extends BaseService
 
     public function insertBulk($csvFile)
     {
-        Excel::import(new StocksImport, $csvFile);
+        Excel::import(app()->make(StocksImport::class), $csvFile);
 
         return true;
     }

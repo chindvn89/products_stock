@@ -2,7 +2,7 @@
 
 namespace App\Imports;
 
-use App\Models\Product;
+use App\Repositories\ProductRepositoryInterface;
 use App\Repositories\StockRepositoryInterface;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -11,6 +11,18 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 
 class StocksImport implements ToArray, WithChunkReading, WithStartRow
 {
+    protected $stockRepository;
+    protected $productRepository;
+
+    public function __construct(
+        StockRepositoryInterface $stockRepository,
+        ProductRepositoryInterface $productRepository
+    )
+    {
+        $this->stockRepository = $stockRepository;
+        $this->productRepository = $productRepository;
+    }
+
     public function array(array $rows)
     {
         $stocksInput = [];
@@ -23,7 +35,7 @@ class StocksImport implements ToArray, WithChunkReading, WithStartRow
         }
 
         $codes = array_unique(array_column($stocksInput, 'code'));
-        $products = Product::whereIn('code', $codes)->get()->keyBy('code');
+        $products = $this->productRepository->getAll(['codes' => $codes])->keyBy('code');
         $standardData = [];
         for ($i=0; $i < count($stocksInput); $i++) {
             $stock = $stocksInput[$i];
@@ -40,8 +52,7 @@ class StocksImport implements ToArray, WithChunkReading, WithStartRow
             $standardData[] = $stock;
         }
 
-        $stockRepository = app()->make(StockRepositoryInterface::class);
-        $stockRepository->insertBulk($standardData);
+        $this->stockRepository->insertBulk($standardData);
     }
 
     public function chunkSize(): int

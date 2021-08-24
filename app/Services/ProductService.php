@@ -28,7 +28,7 @@ class ProductService extends BaseService
 
     public function list($params = [])
     {
-        return $this->productRepository->getAll($params);
+        return $this->productRepository->getAllPaging($params);
     }
 
     public function get(string $code, $params = []) : ?Product

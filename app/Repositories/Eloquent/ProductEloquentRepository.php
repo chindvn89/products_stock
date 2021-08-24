@@ -6,6 +6,7 @@ use App\Models\Stock;
 use App\Repositories\ProductRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductEloquentRepository extends EloquentRepository implements ProductRepositoryInterface
 {
@@ -19,11 +20,17 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         return Product::class;
     }
 
-    public function getAll($params = []) : Paginator
+    public function getAllPaging($params = []) : Paginator
     {
         $query = $this->buildQueryList($params);
         $perPage = !empty($params['per_page']) ? (int)$params['per_page'] : Product::DEFAULT_PAGINATION_PER_PAGE;
         return $query->paginate($perPage);
+    }
+
+    public function getAll($params = []) : Collection
+    {
+        $query = $this->buildQueryList($params);
+        return $query->get();
     }
 
     public function get(string $code, $params = []) : ?Product
@@ -32,7 +39,6 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         $product = $query->first();
         return $product;
     }
-
 
     ////// private functions //////////
 
@@ -88,6 +94,10 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         }
         if (!empty($params['sum_on_hand_max'])) {
             $query->having('stocks_sum_on_hand', '<=', (int)$params['sum_on_hand_max']);
+        }
+        // filter by codes
+        if (!empty($params['codes']) && is_array($params['codes'])) {
+            $query->whereIn('code', $params['codes']);
         }
     }
 
