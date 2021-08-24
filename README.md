@@ -7,7 +7,11 @@
 - Config file ```.env``` for your environment
 - Run and check if it works with a simple endpoint: /api/products
 
-# Run tests
+# Run unit/feature tests
 - Config file ```.env.tesing``` for testing environment
 - Run command ```php artisan config:cache --env=testing``` to switch to testing mode
 - Run command ```php artisan test``` in testing mode to run the test cases
+
+# Run E2E tests with laravel/dusk package
+- Run server ```php artisan serve```
+- Run ```php artisan dusk``` to run E2E test cases

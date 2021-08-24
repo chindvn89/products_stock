@@ -7,6 +7,7 @@ use App\Repositories\Eloquent\StockEloquentRepository;
 use App\Repositories\ProductRepositoryInterface;
 use App\Repositories\StockRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Dusk\DuskServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepositoryInterface::class, ProductEloquentRepository::class);
 
         $this->app->bind(StockRepositoryInterface::class, StockEloquentRepository::class);
+
+        if ($this->app->environment('local', 'testing')) {
+            $this->app->register(DuskServiceProvider::class);
+         }
     }
 
     /**
