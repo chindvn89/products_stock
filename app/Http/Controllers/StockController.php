@@ -21,6 +21,11 @@ class StockController extends Controller
         $this->stockService = $stockService;
     }
 
+    /**
+     * Insert multiple stocks by posting a csv file
+     * @param App\Http\Requests\Product\AddStockBulkRequest   $request
+     * @return \Dingo\Api\Http\Response
+     */
     public function insertBulk(AddStockBulkRequest $request)
     {
         $result = $this->stockService->insertBulk($request->file('file'));
