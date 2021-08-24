@@ -15,11 +15,16 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
      * get model
      * @return string
      */
-    public function getModel()
+    public function getModel() : string
     {
         return Product::class;
     }
 
+    /**
+     * Get list of products
+     * @param array $params Filters for products
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
     public function getAllPaging($params = []) : Paginator
     {
         $query = $this->buildQueryList($params);
@@ -27,12 +32,23 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         return $query->paginate($perPage);
     }
 
+    /**
+     * Get list of products
+     * @param array $params Filters for products
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAll($params = []) : Collection
     {
         $query = $this->buildQueryList($params);
         return $query->get();
     }
 
+    /**
+     * Get a product by code
+     * @param string $code  An unique string to identify a product
+     * @param array $params Filters for list stocks of the product
+     * @return \App\Models\Product | null
+     */
     public function get(string $code, $params = []) : ?Product
     {
         $query = $this->buildQueryGet($code, $params);
@@ -42,6 +58,12 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
 
     ////// private functions //////////
 
+    /**
+     * Build a query to get a product's detail
+     * @param string $code  An unique string to identify a product
+     * @param array $params Filters for list stocks of the product
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function buildQueryGet($code, $params = [])
     {
         $query = $this->_model::where([
@@ -52,6 +74,11 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         return $query;
     }
 
+    /**
+     * Build a query to get list of products
+     * @param array $params Filters for products
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function buildQueryList($params = [])
     {
         $query = $this->_model::query();
@@ -61,9 +88,15 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         return $query;
     }
 
+    /**
+     * Modify a query, append data stocks_sum_on_hand to each product record
+     * @param \Illuminate\Database\Eloquent\Builder &$query The query is modified
+     * @param array $params Filters for products
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function buildQueryAddSumOnHand(&$query, $params = [])
     {
-        list($fromDate, $toDate) = $this->buildQueryGetDateFromParams($params);
+        list($fromDate, $toDate) = $this->getDateFromParams($params);
         $query->withSum(['stocks' => function($q) use ($fromDate, $toDate) {
             if ($fromDate) {
                 $q->whereDate('production_date', '>=', $fromDate);
@@ -74,10 +107,16 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         }], 'on_hand');
     }
 
+    /**
+     * Modify a query, to apply filters to products
+     * @param \Illuminate\Database\Eloquent\Builder &$query The query is modified
+     * @param array $params Filters for products
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function buildQueryFilter(&$query, $params = [])
     {
         // filter by production_date of stock
-        list($fromDate, $toDate) = $this->buildQueryGetDateFromParams($params);
+        list($fromDate, $toDate) = $this->getDateFromParams($params);
         if ($fromDate) {
             $query->whereHas('stocks', function($q) use ($fromDate) {
                 $q->whereDate('production_date', '>=', $fromDate);
@@ -101,6 +140,12 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         }
     }
 
+    /**
+     * Modify a query, to order by something is input
+     * @param \Illuminate\Database\Eloquent\Builder &$query The query is modified
+     * @param array $params Filters for products
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function buildQueryListOrder(&$query, $params = [])
     {
         if (!empty($params['sort']) && !empty($params['sort']['sum_on_hand'])) {
@@ -108,7 +153,12 @@ class ProductEloquentRepository extends EloquentRepository implements ProductRep
         }
     }
 
-    public function buildQueryGetDateFromParams($params = [])
+    /**
+     * Get and standardize the dates from query params
+     * @param array $params List query params
+     * @return array [$fromDate, $toDate] Return list of dates with the correct format to build database query
+     */
+    public function getDateFromParams($params = [])
     {
         $fromDate = !empty($params['production_date_from']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $params['production_date_from']) : NULL;
         $toDate = !empty($params['production_date_to']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $params['production_date_to']) : NULL;

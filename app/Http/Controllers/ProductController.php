@@ -26,6 +26,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @GET
      * Get list of products, with pagination, filters
      * @param Illuminate\Http\Request   $request
      * @return \Dingo\Api\Http\Response
@@ -37,6 +38,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @POST
      * Add a new product
      * @param App\Http\Requests\Product\AddProductRequest   $request
      * @return \Dingo\Api\Http\Response
@@ -48,6 +50,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @GET
      * Get detail of a product, can use filters
      * @param Illuminate\Http\Request   $request
      * @param string   $code    An unique string to identify a product
@@ -60,6 +63,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @PUT
      * Update a product
      * @param App\Http\Requests\Product\UpdateProductRequest   $request
      * @param string   $code    An unique string to identify a product
@@ -75,6 +79,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @DELETE
      * Delete a product
      * @param string   $code    An unique string to identify a product
      * @return \Dingo\Api\Http\Response
@@ -88,6 +93,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @POST
      * Insert/Update multiple products by posting a csv file
      * @param App\Http\Requests\Product\UpsertProductBulkRequest   $request
      * @return \Dingo\Api\Http\Response
@@ -101,6 +107,7 @@ class ProductController extends Controller
     }
 
     /**
+     * @POST
      * Add a stock to a product
      * @param App\Http\Requests\Product\AddProductStockRequest   $request
      * @param string   $code    An unique string to identify a product

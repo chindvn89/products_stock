@@ -22,6 +22,7 @@ class StockController extends Controller
     }
 
     /**
+     * @POST
      * Insert multiple stocks by posting a csv file
      * @param App\Http\Requests\Product\AddStockBulkRequest   $request
      * @return \Dingo\Api\Http\Response

@@ -8,6 +8,7 @@ use App\Models\Stock;
 use App\Repositories\ProductRepositoryInterface;
 use App\Repositories\StockRepositoryInterface;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\Paginator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ProductService extends BaseService
@@ -26,12 +27,24 @@ class ProductService extends BaseService
         $this->stockRepository = $stockRepository;
     }
 
-    public function list($params = [])
+    /**
+     * Get list of products, with pagination, filters
+     * @param array  $params To filter the list
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function list($params = []) : Paginator
     {
         return $this->productRepository->getAllPaging($params);
     }
 
-    public function get(string $code, $params = []) : ?Product
+    /**
+     * Get detail of a product
+     * @param string $code An unique string to identify a product
+     * @param array  $params To filter the stocks of a product
+     * @throws Exception 404 if product is not found
+     * @return \App\Models\Product
+     */
+    public function get(string $code, $params = []) : Product
     {
         $product = $this->productRepository->get($code, $params);
         if (empty($product)) {
@@ -41,6 +54,12 @@ class ProductService extends BaseService
         return $product;
     }
 
+    /**
+     * Add a new product
+     * @param array  $params Data of the product
+     * @throws Exception 400 - If the code of the new product is duplicated
+     * @return \App\Models\Product
+     */
     public function insert(array $params) : Product
     {
         $product = $this->productRepository->get($params['code']);
@@ -52,6 +71,13 @@ class ProductService extends BaseService
         return $product;
     }
 
+    /**
+     * Update a product
+     * @param string $code An unique string to identify a product
+     * @param array  $params Date to update the product
+     * @throws Exception 404 - If product is not found
+     * @return \App\Models\Product
+     */
     public function update(string $code,array $params) : Product
     {
         $product = $this->get($code);
@@ -59,6 +85,12 @@ class ProductService extends BaseService
         return $product;
     }
 
+    /**
+     * Delete a product
+     * @param string $code An unique string to identify a product
+     * @throws Exception 404 - If product is not found
+     * @return boolean
+     */
     public function delete(string $code) : bool
     {
         $product = $this->get($code);
@@ -66,12 +98,24 @@ class ProductService extends BaseService
         return true;
     }
 
+    /**
+     * Insert/Update multiple products from a csv file input
+     * @param file $csvFile A csv file is a list of products
+     * @return boolean
+     */
     public function upsertBulk($csvFile)
     {
         Excel::import(new ProductsImport, $csvFile);
         return true;
     }
 
+    /**
+     * Add a stock to a product
+     * @param string $code An unique string to identify a product
+     * @param array $stockParams    Data of the new stock will be added to the product
+     * @throws Exception 404 - If product is not found
+     * @return boolean
+     */
     public function addStock(string $code, array $stockParams)
     {
         $product = $this->get($code);

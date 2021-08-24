@@ -25,6 +25,13 @@ interface RepositoryInterface
     public function create(array $attributes);
 
     /**
+     * Insert multiple records to database on time
+     * @param array $data
+     * @return mixed
+     */
+    public function insertBulk(array $data);
+
+    /**
      * Update
      * @param $id
      * @param array $attributes
@@ -38,4 +45,5 @@ interface RepositoryInterface
      * @return mixed
      */
     public function delete($id);
+
 }
