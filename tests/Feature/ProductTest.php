@@ -11,7 +11,6 @@ use Tests\TestCase;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use Tests\Utils\FileUtils;
 
 class ProductTest extends TestCase
 {
