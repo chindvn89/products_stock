@@ -8,12 +8,14 @@ use App\Models\Product;
 use App\Models\Stock;
 use App\Services\ProductService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Str;
 
 class ProductTest extends TestCase
 {
 
     use DatabaseTransactions;
 
+    protected $faker;
     protected $productData;
     protected $productService;
 
@@ -22,9 +24,9 @@ class ProductTest extends TestCase
         parent::setUp();
         $this->faker = Faker::create();
         $this->productData = [
-            'code' => $this->faker->name,
+            'code' => rand(1000000,9999999),
             'name' => $this->faker->name,
-            'description' => $this->faker->realText(rand(10, 200)),
+            'description' => Str::random(144),
         ];
         $this->productService = app()->make(ProductService::class);
     }

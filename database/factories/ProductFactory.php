@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Product;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
@@ -22,7 +23,7 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'code' => $this->faker->name(),
+            'code' => Str::random(10),
             'name' => $this->faker->name(),
             'description' => $this->faker->realText(rand(10, 200)),
         ];

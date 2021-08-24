@@ -24,7 +24,7 @@ class StockFactory extends Factory
         return [
             'on_hand' => rand(-100, 999),
             'taken' => (bool)random_int(0, 1),
-            'production_date' => $this->faker->date('Y-m-d'),
+            'production_date' => $this->faker->date(Stock::PRODUCTION_DATE_DATABASE_FORMAT),
         ];
     }
 }

@@ -11,7 +11,8 @@ class Stock extends Model
 
     protected $table = 'stock';
 
-    const PRODUCTION_DATE_FORMAT = 'd/m/Y';
+    const PRODUCTION_DATE_INPUT_FORMAT = 'd/m/Y';
+    const PRODUCTION_DATE_DATABASE_FORMAT = 'Y-m-d';
 
     protected $fillable = [
         'product_id',

@@ -73,7 +73,7 @@ class ProductService extends BaseService
     {
         $product = $this->get($code, true);
         $stockParams['product_id'] = $product->id;
-        $stockParams['production_date'] = !empty($stockParams['production_date']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_FORMAT, $stockParams['production_date']) : NULL;
+        $stockParams['production_date'] = !empty($stockParams['production_date']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $stockParams['production_date']) : NULL;
         Stock::create($stockParams);
         $product = $this->get($code, true);
         return $product;
@@ -145,8 +145,8 @@ class ProductService extends BaseService
 
     public function buildQueryGetDateFromParams($params = [])
     {
-        $fromDate = !empty($params['production_date_from']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_FORMAT, $params['production_date_from']) : NULL;
-        $toDate = !empty($params['production_date_to']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_FORMAT, $params['production_date_to']) : NULL;
+        $fromDate = !empty($params['production_date_from']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $params['production_date_from']) : NULL;
+        $toDate = !empty($params['production_date_to']) ? Carbon::createFromFormat(Stock::PRODUCTION_DATE_INPUT_FORMAT, $params['production_date_to']) : NULL;
         return [
             $fromDate,
             $toDate,
