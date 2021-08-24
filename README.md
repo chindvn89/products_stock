@@ -6,7 +6,7 @@
 - Run command ```composer install``` to install the packages
 - Config file ```.env``` for your environment
 - Run command ```php artisan migrate``` to migrate database
-- Run and check if it works with a simple endpoint: /api/products
+- Run ```php artisan serve``` and check if it works with a simple endpoint: /api/products
 
 # Run unit/feature tests
 - Config file ```.env.tesing``` for testing environment
