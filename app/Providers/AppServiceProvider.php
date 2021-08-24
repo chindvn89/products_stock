@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\ProductEloquentRepository;
+use App\Repositories\Eloquent\StockEloquentRepository;
+use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\StockRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(ProductRepositoryInterface::class, ProductEloquentRepository::class);
+
+        $this->app->bind(StockRepositoryInterface::class, StockEloquentRepository::class);
     }
 
     /**

@@ -3,18 +3,18 @@
 namespace App\Services;
 
 use App\Imports\StocksImport;
-use App\Models\Product;
-use App\Models\Stock;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
+use App\Repositories\StockRepositoryInterface;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StockService extends BaseService
 {
+    protected $stockRepository;
 
-    public function __construct()
+    public function __construct(
+        StockRepositoryInterface $stockRepository
+    )
     {
-        $this->modelClass = Stock::class;
+        $this->stockRepository = $stockRepository;
     }
 
     public function insertBulk($csvFile)

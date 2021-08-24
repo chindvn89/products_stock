@@ -74,3 +74,5 @@ storage/fonts/*afm*
 
 *telescope*
 *Telescope*
+
+storage/framework/laravel-excel/*

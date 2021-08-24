@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class ProductEndpointsTest extends TestCase
 {
 
-    use DatabaseTransactions;
+    // use DatabaseTransactions;
 
     protected $faker;
     protected $productData;
@@ -28,7 +28,7 @@ class ProductEndpointsTest extends TestCase
         parent::setUp();
         $this->faker = Faker::create();
         $this->productData = [
-            'code' => rand(1000000,9999999),
+            'code' => Str::random(10),
             'name' => $this->faker->name,
             'description' => Str::random(144),
         ];

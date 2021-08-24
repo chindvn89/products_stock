@@ -3,15 +3,11 @@
 namespace App\Imports;
 
 use App\Models\Product;
-use App\Models\Stock;
+use App\Repositories\StockRepositoryInterface;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\WithUpserts;
 
 class StocksImport implements ToArray, WithChunkReading, WithStartRow
 {
@@ -44,7 +40,8 @@ class StocksImport implements ToArray, WithChunkReading, WithStartRow
             $standardData[] = $stock;
         }
 
-        Stock::insert($standardData);
+        $stockRepository = app()->make(StockRepositoryInterface::class);
+        $stockRepository->insertBulk($standardData);
     }
 
     public function chunkSize(): int

@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = $this->productService->findAll($request->all());
+        $products = $this->productService->list($request->all());
         return $this->response->paginator($products, new ProductTransformer());
     }
 
@@ -40,7 +40,7 @@ class ProductController extends Controller
 
     public function show(Request $request, string $code)
     {
-        $product = $this->productService->get($code, true, $request->all());
+        $product = $this->productService->get($code, $request->all());
         return $this->response->item($product, new ProductTransformer());
     }
 
